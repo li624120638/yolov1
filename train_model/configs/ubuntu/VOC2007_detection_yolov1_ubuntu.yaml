@@ -1,0 +1,146 @@
+config: ./configs/VOC2007_detection_yolov1_ubuntu.yaml
+work_dir: &work_dir /home/ustc/liguoxin/CMB/work_dir/detections/VOC2007_detection_yolov1_ubuntu/  # must be absolute path
+dataset_root: &dataset_root /home/ustc/liguoxin/datasets/voc/
+download: &download false
+phase: train
+random_fix: true
+random_seed: 42
+device: 0
+print_log: true
+log_interval: 1
+
+dataloader: dataloaders.voc_dataloader.VOCDetectionDataset
+model: models.yolo.YOLOv1Net
+batch_size: &batch_size 28
+
+W: &W 448
+H: &H 448
+S: &S 7
+B: &B 2
+C: &C 20
+conf_thres: &conf_thres 0.5
+nms_thres: &nms_thres 0.5
+sigmoid: &sigmoid true
+softmax: &softmax false
+
+dataset_args:
+  train0:
+    root: *dataset_root
+    year: 2007
+    image_set: trainval
+    download: *download
+    phase: train
+    visualization: false
+    work_dir: *work_dir
+    translate: [0.2, 0.2]
+    scale: [0.8, 1.2]
+    remain_thres: 0.4
+    W: *W
+    H: *H
+    S: *S
+    B: *B
+    C: *C
+  train1:
+    root: *dataset_root
+    year: 2012
+    image_set: trainval
+    download: *download
+    phase: train
+    visualization: false
+    work_dir: *work_dir
+    translate: [ 0.2, 0.2 ]
+    scale: [ 0.8, 1.2 ]
+    remain_thres: 0.4
+    W: *W
+    H: *H
+    S: *S
+    B: *B
+    C: *C
+  valid:
+    root: *dataset_root
+    year: 2007
+    image_set: test
+    download: *download
+    phase: test
+    visualization: false
+    work_dir: *work_dir
+    W: *W
+    H: *H
+    S: *S
+    B: *B
+    C: *C
+  test: {}
+
+dataloader_args:
+  train:
+    shuffle: true
+    batch_size: *batch_size
+    num_workers: 0
+    pin_memory: true
+  valid:
+    shuffle: false
+    batch_size: *batch_size
+    num_workers: 0
+    pin_memory: true
+  test: {}
+
+model_args:
+    S: *S
+    B: *B
+    C: *C
+    weights: null # /home/ustc/liguoxin/CMB/work_dir/detections/VOC2007_detection_yolov1_ubuntu/checkpoint.pt
+    ignore_weights: []
+
+optimizer_args:
+  resume: true
+  base_lr: 0.0001
+  lr_scheduler: plateau
+  nesterov: false
+  optimizer: SGD
+  start_epoch: 1
+  num_epochs: 20000
+  step:
+  - 75
+  - 105
+  weight_decay: 0.000000
+
+criterion_args:
+  loss: losses.yolo_loss.YOLOv1Loss
+  loss_args:
+    W: *W
+    H: *H
+    S: *S
+    B: *B
+    C: *C
+    lambda_coord: 5
+    lambda_noobj: 0.5
+    sigmoid: *sigmoid
+    softmax: *softmax
+  accuracy: evaluates.detection_evaluate.YOLOv1Acc
+  accuracy_args:
+    W: *W
+    H: *H
+    S: *S
+    B: *B
+    C: *C
+    conf_thres: *conf_thres
+    nms_thres: *nms_thres
+    iou_thres: 0.5
+    sigmoid: *sigmoid
+    softmax: *softmax
+
+evaluate_args:
+  visualize:
+    flag: false
+    vis_tool: visualization.detection_vis.YOLOv1Vis
+    vis_args:
+      W: *W
+      H: *H
+      S: *S
+      B: *B
+      C: *C
+      conf_thres: *conf_thres
+      nms_thres: *nms_thres
+      sigmoid: *sigmoid
+      softmax: *softmax
+      denorm: true
