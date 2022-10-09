@@ -216,7 +216,7 @@ class VOCDetectionDataset(VOCDetection):
                             color=self.class_colors[cls_idx], thickness=cv2.FILLED)
         img = cv2.putText(img, cls_name, (int(x1), int(y1 + text_h)), 1, 1, color=(255, 255, 255), thickness=1)
         return img
-
+    
 
 if __name__ == '__main__':
     voc2007 = VOCDetectionDataset(year='2007', image_set='trainval')

@@ -32,8 +32,7 @@ def config():
     # parameter priority: command line > config > default
     parser = argparse.ArgumentParser(
         description='Framework for training keypoints detector')
-    parser.add_argument('--config', default='./configs/VOC2007_detection_yolov1_vis.yaml',
-                        help='path to the configuration file')
+    parser.add_argument('--config', default=None, required=True, help='path to the configuration file')
     parser.add_argument('--work-dir', default='./work_dir/temp', help='the work folder for storing results')
     parser.add_argument('--phase', default='train', help='must be train or test')
     parser.add_argument('--random-fix', type=bool, default=True, help='fix the random seed or not')
